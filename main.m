@@ -34,7 +34,20 @@ for i=1:3
     imLflipped(:,:,i) = fliplr(imL(:,:,i));
     imRflipped(:,:,i) = fliplr(imR(:,:,i));
 end
-%% Generating disparity images
+imwrite(imLflipped,[outFolder 'imLflipped.png']);
+imwrite(imRflipped,[outFolder 'imRflipped.png']);
 
+system(sprintf('%s %s %s %s %s', mrfPath, mrfOpt, [outFolder 'imRflipped.png'], [outFolder 'imLflipped.png'], [outFolder 'flippedR.png']));
+
+%% reflip
+flipped = imread([outFolder 'flippedR.png']);
+for i=1:3
+    outR = fliplr(flipped);
+end
+imwrite(outR,[outFolder outRfile]);
 
 %% View synthesis
+
+dispL = imread([outFolder outLfile]);
+dispR = imread([outFolder outRfile]);
+
