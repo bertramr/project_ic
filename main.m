@@ -26,6 +26,9 @@ scale = 3;
 syntLfile = 'syntL.png';
 syntRfile = 'syntR.png';
 
+outFile = 'viewsynt.png';
+errorFile = 'error.png';
+
 dmin = importdata([imFolder 'dmin.txt']);
 nD = dmin/3;
 
@@ -37,22 +40,13 @@ mrfOpt = sprintf('-n %f -b -a %d -m %d -l %d', ...
     nD, MRFalg, smoothmax,lambda);
 
 
-%%
-system(sprintf('%s %s %s %s %s', ...
-    mrfPath,...
-    mrfOpt,...
-    [imFolder imLfile],...
-    [imFolder imRfile],...
-    [outFolder outLfile]));
-
 %% Flip-Image
 imL = imread([imFolder imLfile]);
+imR = imread([imFolder imRfile]);
 
 IMsize = size(imL);
 
-imR = imread([imFolder imRfile]);
 
-%%
 imLflipped = zeros(IMsize,'uint8');
 imRflipped = zeros(IMsize,'uint8');
 for i=1:3
@@ -61,6 +55,16 @@ for i=1:3
 end
 imwrite(imLflipped,[outFolder imLflipFile]);
 imwrite(imRflipped,[outFolder imRflipFile]);
+
+
+%% Disparity berechnen
+system(sprintf('%s %s %s %s %s', ...
+    mrfPath,...
+    mrfOpt,...
+    [imFolder imLfile],...
+    [imFolder imRfile],...
+    [outFolder outLfile]));
+
 
 system(sprintf('%s %s %s %s %s',...
     mrfPath, ...
@@ -71,63 +75,36 @@ system(sprintf('%s %s %s %s %s',...
 
 %% reflip
 flipped = imread([outFolder outRflipFile]);
-outR = zeros(IMsize,'uint8');
-for i=1:3
-    outR = fliplr(flipped);
-end
+
+outR = fliplr(flipped);
+
 imwrite(outR,[outFolder outRfile]);
+
 
 %% View synthesis
 
-% dispL = imread([outFolder outLfile]);
-% dispR = imread([outFolder outRfile]);
-dispL = imread([imFolder 'disp1.png']);
-dispR = imread([imFolder 'disp5.png']);
+dispL = imread([outFolder outLfile]);
+dispR = imread([outFolder outRfile]);
+%dispL = imread([imFolder 'disp1.png']);
+%dispR = imread([imFolder 'disp5.png']);
 
+syntL = disparity_synthesis(imL,dispL,imDistance/scale);
+syntR = disparity_synthesis(imR,dispR,(imDistance-1)/scale);
 
+synt = view_synthesis(syntL,syntR);
+
+%% Fehler berechnen
 imM = imread([imFolder 'view3.png']);
-
-syntL = zeros(IMsize, 'uint8');
-syntR = zeros(IMsize, 'uint8');
-
-for y = 1:IMsize(1)
-    for x = 1:IMsize(2)
-        dxL = fix(x + imDistance/scale * double(dispL(y,x)));
-        dxR = fix(x + (imDistance-1)/scale * double(dispR(y,x)));
-        
-        if 0 < dxL && dxL <= IMsize(2)
-            syntL(y,x,:) = imL(y,dxL,:);
-        else
-           [x,y];
-        end
-        if 0 < dxR && dxR <= IMsize(2)
-            syntR(y,x,:) = imR(y,dxR,:);
-        else
-            [x,y];
-        end
-        
-    end
-end
-
-imwrite(syntL,[outFolder syntLfile]);
-imwrite(syntR,[outFolder syntRfile]);
-
-%% Synthese aus 2 mach 1
-synt = zeros(IMsize,'uint8');
-syntLholes = syntL == 0;
-syntRholes = syntR == 0;
-synt = reshape(0.5 * (uint8(~syntLholes .* ~syntRholes) .* syntL) ...
-    + 0.5 * (uint8(~syntRholes .* ~syntLholes) .* syntR) ...
-    + syntR .* uint8(syntLholes .* ~syntRholes) ...
-    + syntL .* uint8(syntRholes .* ~syntLholes) ...
-    ,IMsize);
-
-imwrite(synt,[outFolder 'viewsynt.png']);
-
-imwrite(synt-imM,[outFolder 'error.png']);
-
 [PSNR,MSE,MAXERR,L2RAT]=measerr(imM,synt)
 
+%% Dateien schreiben
+imwrite(syntL,[outFolder syntLfile]);
+imwrite(syntR,[outFolder syntRfile]);
+imwrite(synt,[outFolder outFile ]);
+imwrite(synt-imM,[outFolder errorFile]);
+
+
+%% Plotten
 figure;
 subplot(2,3,1);colormap(gray); image(syntL);
 subplot(2,3,2); image(synt);
