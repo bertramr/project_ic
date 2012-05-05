@@ -30,7 +30,7 @@ nD = dmin/3;
 
 MRFalg = 1;
 smoothmax = 2;
-lambda = 20;
+lambda = 80;
 
 mrfOpt = sprintf('-n %f -b -a %d -m %d -l %d', ...
     nD, MRFalg, smoothmax,lambda);
@@ -77,9 +77,12 @@ end
 imwrite(outR,[outFolder outRfile]);
 
 %% View synthesis
-%
+
 dispL = imread([outFolder outLfile]);
 dispR = imread([outFolder outRfile]);
+% dispL = imread([imFolder 'disp1.png']);
+% dispR = imread([imFolder 'disp5.png']);
+
 
 imM = imread([imFolder 'view3.png']);
 
@@ -115,6 +118,8 @@ syntRholes = syntR == 0;
 synt = reshape(0.5 * syntL(~syntLholes) + 0.5 * syntR(~syntRholes),IMsize);
 
 imwrite(synt,[outFolder 'viewsynt.png']);
+
+imwrite(synt-imM,[outFolder 'error.png']);
 
 [PSNR,MSE,MAXERR,L2RAT]=measerr(imM,synt)
 
