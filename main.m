@@ -1,12 +1,11 @@
 %% main.m
 %
 %% Input Data
+
 input.Folder = './video/frame/';
 
 output.Folder = './output/';
-
 output.errorFile = 'error.png';
-
 
 tmp.Folder = './tmp/';
 tmp.dispRflipFile = 'dispRflip.png';
@@ -20,7 +19,7 @@ opts.MRFalg = 1;
 opts.smoothmax = 2;
 opts.lambda = 60;
 
-for i = 221:240
+for i = 241:260
     
     input.Lfile = sprintf('left_320x192_%d.png',i);
     input.Rfile = sprintf('right_320x192_%d.png',i);
