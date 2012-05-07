@@ -6,17 +6,18 @@ function [synthesis] = disparity_synthesis(image,disparity,factor)
 IMsize = size(image);
 
 synthesis = zeros(IMsize, 'uint8');
+intDx = zeros([1,IMsize(2),3], 'uint8');
 
 for y = 1:IMsize(1)
     x = 1:IMsize(2);
     dx = fix(x + factor * double(disparity(y,x)));
     
     boolDx = 0 < dx & dx <= IMsize(2);
-    intDx = uint8(boolDx);
-    
+    %intDx = uint8(repmat(boolDx,[1,1,3]));
+    [intDx(1,:,1),intDx(1,:,2),intDx(1,:,3)] = deal(boolDx);
     boundedDx = ~boolDx + boolDx .* dx;
     
-    synthesis(y,x,:) = repmat(intDx,[1,1,3]) .* image(y,boundedDx,:);
+    synthesis(y,x,:) = intDx .* image(y,boundedDx,:);
     
     
 end

@@ -20,7 +20,7 @@ opts.MRFalg = 1;
 opts.smoothmax = 2;
 opts.lambda = 60;
 
-for i = 161:180
+for i = 201:220
     
     input.Lfile = sprintf('left_320x192_%d.png',i);
     input.Rfile = sprintf('right_320x192_%d.png',i);
