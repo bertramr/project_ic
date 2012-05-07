@@ -11,9 +11,13 @@ for y = 1:IMsize(1)
     x = 1:IMsize(2);
     dx = fix(x + factor * double(disparity(y,x)));
     
-    if 0 < dx & dx <= IMsize(2)
-        synthesis(y,x,:) = image(y,dx,:);
-    end
+    boolDx = 0 < dx & dx <= IMsize(2);
+    intDx = uint8(boolDx);
+    
+    boundedDx = ~boolDx + boolDx .* dx;
+    
+    synthesis(y,x,:) = repmat(intDx,[1,1,3]) .* image(y,boundedDx,:);
+    
     
 end
 
