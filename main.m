@@ -1,114 +1,50 @@
 %% main.m
 %
-%%
-clc; clear all; close all;
 %% Input Data
-mrfPath = '../MRF-benchmarks/mrfstereo/mrfstereo';
+input.Folder = './video/frame/';
 
-imFolder = '../MRF-benchmarks/mrfstereo/data/Plastic/';
+output.Folder = './output/';
 
-outFolder = './output/';
-
-outLfile = 'dispL.png';
-outRfile = 'dispR.png';
-
-outRflipFile = 'dispRflip.png';
-
-imLflipFile = 'imLflip.png';
-imRflipFile = 'imRflip.png';
-
-imLfile = 'view1.png';
-imRfile = 'view5.png';
-
-imDistance = 0.5;
-scale = 3;
-
-syntLfile = 'syntL.png';
-syntRfile = 'syntR.png';
-
-outFile = 'viewsynt.png';
-errorFile = 'error.png';
-
-dmin = importdata([imFolder 'dmin.txt']);
-nD = dmin/3;
-
-MRFalg = 1;
-smoothmax = 2;
-lambda = 80;
-
-mrfOpt = sprintf('-n %f -b -a %d -m %d -l %d', ...
-    nD, MRFalg, smoothmax,lambda);
+output.errorFile = 'error.png';
 
 
-%% Flip-Image
-imL = imread([imFolder imLfile]);
-imR = imread([imFolder imRfile]);
+tmp.Folder = './tmp/';
+tmp.dispRflipFile = 'dispRflip.png';
+tmp.LflipFile = 'Lflip.png';
+tmp.RflipFile = 'Rflip.png';
 
-IMsize = size(imL);
+opts.imDistance = 0.5;
+opts.scale = 6;
+opts.nD = 40;
+opts.MRFalg = 1;
+opts.smoothmax = 2;
+opts.lambda = 60;
 
+for i = 121:160
+    
+    input.Lfile = sprintf('left_320x192_%d.png',i);
+    input.Rfile = sprintf('right_320x192_%d.png',i);
+    
+    output.Lfile = sprintf('disp/dispL_%d.png',i);
+    output.Rfile = sprintf('disp/dispR_%d.png',i);
+    output.File = sprintf('synt_%d.png',i);
+    output.syntLfile = sprintf('synt/syntL_%d.png',i);
+    output.syntRfile = sprintf('synt/syntR_%d.png',i);
 
-imLflipped = zeros(IMsize,'uint8');
-imRflipped = zeros(IMsize,'uint8');
-for i=1:3
-    imLflipped(:,:,i) = fliplr(imL(:,:,i));
-    imRflipped(:,:,i) = fliplr(imR(:,:,i));
+    
+    synthesis(input,output,tmp,opts)
 end
-imwrite(imLflipped,[outFolder imLflipFile]);
-imwrite(imRflipped,[outFolder imRflipFile]);
 
-
-%% Disparity berechnen
-system(sprintf('%s %s %s %s %s', ...
-    mrfPath,...
-    mrfOpt,...
-    [imFolder imLfile],...
-    [imFolder imRfile],...
-    [outFolder outLfile]));
-
-
-system(sprintf('%s %s %s %s %s',...
-    mrfPath, ...
-    mrfOpt, ...
-    [outFolder imRflipFile], ...
-    [outFolder imLflipFile], ...
-    [outFolder outRflipFile]));
-
-%% reflip
-flipped = imread([outFolder outRflipFile]);
-
-outR = fliplr(flipped);
-
-imwrite(outR,[outFolder outRfile]);
-
-
-%% View synthesis
-
-dispL = imread([outFolder outLfile]);
-dispR = imread([outFolder outRfile]);
-%dispL = imread([imFolder 'disp1.png']);
-%dispR = imread([imFolder 'disp5.png']);
-
-syntL = disparity_synthesis(imL,dispL,imDistance/scale);
-syntR = disparity_synthesis(imR,dispR,(imDistance-1)/scale);
-
-synt = view_synthesis(syntL,syntR);
-
+% imwrite(synt-imM,[outFolder errorFile]);
 %% Fehler berechnen
-imM = imread([imFolder 'view3.png']);
-[PSNR,MSE,MAXERR,L2RAT]=measerr(imM,synt)
-
-%% Dateien schreiben
-imwrite(syntL,[outFolder syntLfile]);
-imwrite(syntR,[outFolder syntRfile]);
-imwrite(synt,[outFolder outFile ]);
-imwrite(synt-imM,[outFolder errorFile]);
-
+% imM = imread([imFolder 'view3.png']);
+% [PSNR,MSE,MAXERR,L2RAT]=measerr(imM,synt)
 
 %% Plotten
-figure;
-subplot(2,3,1);colormap(gray); image(syntL);
-subplot(2,3,2); image(synt);
-subplot(2,3,3); image(syntR);
-subplot(2,3,4); image(imL);
-subplot(2,3,5); image(imM);
-subplot(2,3,6); image(imR);
+% figure;
+% subplot(2,3,1);colormap(gray); image(syntL);
+% subplot(2,3,2); image(synt);
+% subplot(2,3,3); image(syntR);
+% subplot(2,3,4); image(imL);
+% %subplot(2,3,5); image(imM);
+% subplot(2,3,6); image(imR);
