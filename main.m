@@ -2,7 +2,7 @@
 %
 %% Input Data
 
-input.Folder = '../MRF-benchmarks/mrfstereo/data/Plastic/';
+input.Folder = '../video/ftp.hhi.de/HHIMPEG3DV/sequences/scene_book_arrival/registered/';
 
 output.Folder = './output/';
 output.errorFile = 'error.png';
@@ -19,18 +19,21 @@ opts.MRFalg = 1;
 opts.smoothmax = 2;
 opts.lambda = 160;
 
+PSNR.R = zeros(101,1);
+PSNR.L = zeros(101,1);
+PSNR.M = zeros(101,1);
 %% For schleife
-for i = 1:100
+for i = 0:100
     
-    input.Lfile = sprintf('view1.png');
-    input.Rfile = sprintf('view5.png');
-    input.Mfile = sprintf('view3.png');
+    input.Lfile = sprintf('cam01/Cam01_Frame_%03d.png',i);
+    input.Rfile = sprintf('cam02/Cam02_Frame_%03d.png',i);
+    input.Mfile = sprintf('cam03/Cam03_Frame_%03d.png',i);
     
-    output.Lfile = sprintf('disp/dispL_%d.png',i);
-    output.Rfile = sprintf('disp/dispR_%d.png',i);
-    output.File = sprintf('synt_%d.png',i);
-    output.syntLfile = sprintf('synt/syntL_%d.png',i);
-    output.syntRfile = sprintf('synt/syntR_%d.png',i);
+    output.Lfile = sprintf('disp/dispL_%03d.png',i);
+    output.Rfile = sprintf('disp/dispR_%03d.png',i);
+    output.File = sprintf('synt_%03d.png',i);
+    output.syntLfile = sprintf('synt/syntL_%03d.png',i);
+    output.syntRfile = sprintf('synt/syntR_%03d.png',i);
     
     %%
     synthesis(input,output,tmp,opts)
@@ -43,11 +46,11 @@ for i = 1:100
     synt = imread([output.Folder output.File]);
     
     holes = syntL==0;
-    PSNR_L = measerr(imM(~holes),syntL(~holes));
+    PSNR.L(i+1) = measerr(imM(~holes),syntL(~holes));
     holes = syntR==0;
-    PSNR_R = measerr(imM(~holes),syntR(~holes));
+    PSNR.R(i+1) = measerr(imM(~holes),syntR(~holes));
     holes = synt==0;
-    PSNR_S = measerr(imM(~holes),synt(~holes));
+    PSNR.S(i+1) = measerr(imM(~holes),synt(~holes));
 end
 
 % imwrite(synt-imM,[outFolder errorFile]);
