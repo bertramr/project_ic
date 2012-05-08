@@ -19,7 +19,8 @@ opts.MRFalg = 1;
 opts.smoothmax = 2;
 opts.lambda = 160;
 
-for i = 1:1
+%% For schleife
+for i = 1:100
     
     input.Lfile = sprintf('view1.png');
     input.Rfile = sprintf('view5.png');
