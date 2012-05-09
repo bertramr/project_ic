@@ -1,56 +1,59 @@
 %% main.m
 %
 %% Input Data
-
-input.Folder = '../video/frame/';
-
-output.Folder = './output/';
-output.errorFile = 'error.png';
-
-tmp.Folder = './tmp/';
-tmp.dispRflipFile = 'dispRflip.png';
-tmp.LflipFile = 'Lflip.png';
-tmp.RflipFile = 'Rflip.png';
-
 opts.imDistance = 0.5;
 opts.scale = 1;
-opts.nD = 200;
+opts.nD = 256;
 opts.MRFalg = 1;
-opts.smoothmax = 2;
-opts.lambda = 160;
+opts.smoothmax = 4;
+opts.lambda = 100;
 
-PSNR.R = zeros(101,1);
-PSNR.L = zeros(101,1);
-PSNR.M = zeros(101,1);
+PSNR_R = zeros(100,1);
+PSNR_L = zeros(100,1);
+PSNR_M = zeros(100,1);
+
+input = struct;
+output = struct;
+tmp = struct;
+
+for i =1:100
+    input(i).Folder = ('../video/frame/');
+    input(i).Lfile = sprintf('left_%03d.png',i);
+    input(i).Rfile = sprintf('right_%03d.png',i);
+    input(i).Mfile = sprintf('middle_%03d.png',i);
+    
+    output(i).Folder = ('./output/');
+    output(i).Lfile = sprintf('disp/dispL_%03d.png',i);
+    output(i).Rfile = sprintf('disp/dispR_%03d.png',i);
+    output(i).File = sprintf('synt_%03d.png',i);
+    output(i).syntLfile = sprintf('synt/syntL_%03d.png',i);
+    output(i).syntRfile = sprintf('synt/syntR_%03d.png',i);
+    
+    tmp(i).Folder = './tmp/';
+    tmp(i).dispRflipFile = sprintf('dispRflip_%03d.png',i);
+    tmp(i).LflipFile = sprintf('Lflip_%03d.png',i);
+    tmp(i).RflipFile = sprintf('Rflip_%03d.png',i);
+    
+end
+
 %% For schleife
-for i = 1:100
-    
-    input.Lfile = sprintf('left_%03d.png',i);
-    input.Rfile = sprintf('right_%03d.png',i);
-    input.Mfile = sprintf('middle_%03d.png',i);
-    
-    output.Lfile = sprintf('disp/dispL_%03d.png',i);
-    output.Rfile = sprintf('disp/dispR_%03d.png',i);
-    output.File = sprintf('synt_%03d.png',i);
-    output.syntLfile = sprintf('synt/syntL_%03d.png',i);
-    output.syntRfile = sprintf('synt/syntR_%03d.png',i);
-    
+parfor i = 1:100    
     %%
-    synthesis(input,output,tmp,opts)
+    synthesis(input(i),output(i),tmp(i),opts)
     
     %% Fehler berechnen
-    imM = imread([input.Folder input.Mfile]);
+    imM = imread([input(i).Folder input(i).Mfile]);
     
-    syntL = imread([output.Folder output.syntLfile]);
-    syntR = imread([output.Folder output.syntRfile]);
-    synt = imread([output.Folder output.File]);
+    syntL = imread([output(i).Folder output(i).syntLfile]);
+    syntR = imread([output(i).Folder output(i).syntRfile]);
+    synt = imread([output(i).Folder output(i).File]);
     
     holes = syntL==0;
-    PSNR.L(i) = measerr(imM(~holes),syntL(~holes));
+    PSNR_L(i) = measerr(imM(~holes),syntL(~holes));
     holes = syntR==0;
-    PSNR.R(i) = measerr(imM(~holes),syntR(~holes));
+    PSNR_R(i) = measerr(imM(~holes),syntR(~holes));
     holes = synt==0;
-    PSNR.S(i) = measerr(imM(~holes),synt(~holes));
+    PSNR_M(i) = measerr(imM(~holes),synt(~holes));
 end
 save([output.Folder 'PSNR.mat'],'PSNR');
 
