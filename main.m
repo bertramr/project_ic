@@ -2,7 +2,7 @@
 %
 %% Input Data
 
-input.Folder = '../video/ftp.hhi.de/HHIMPEG3DV/sequences/scene_book_arrival/registered/';
+input.Folder = '../video/frame/';
 
 output.Folder = './output/';
 output.errorFile = 'error.png';
@@ -13,8 +13,8 @@ tmp.LflipFile = 'Lflip.png';
 tmp.RflipFile = 'Rflip.png';
 
 opts.imDistance = 0.5;
-opts.scale = 2;
-opts.nD = 93;
+opts.scale = 1;
+opts.nD = 200;
 opts.MRFalg = 1;
 opts.smoothmax = 2;
 opts.lambda = 160;
@@ -23,11 +23,11 @@ PSNR.R = zeros(101,1);
 PSNR.L = zeros(101,1);
 PSNR.M = zeros(101,1);
 %% For schleife
-for i = 0:100
+for i = 1:100
     
-    input.Lfile = sprintf('cam01/Cam01_Frame_%03d.png',i);
-    input.Rfile = sprintf('cam02/Cam02_Frame_%03d.png',i);
-    input.Mfile = sprintf('cam03/Cam03_Frame_%03d.png',i);
+    input.Lfile = sprintf('left_%03d.png',i);
+    input.Rfile = sprintf('right_%03d.png',i);
+    input.Mfile = sprintf('middle_%03d.png',i);
     
     output.Lfile = sprintf('disp/dispL_%03d.png',i);
     output.Rfile = sprintf('disp/dispR_%03d.png',i);
@@ -46,12 +46,13 @@ for i = 0:100
     synt = imread([output.Folder output.File]);
     
     holes = syntL==0;
-    PSNR.L(i+1) = measerr(imM(~holes),syntL(~holes));
+    PSNR.L(i) = measerr(imM(~holes),syntL(~holes));
     holes = syntR==0;
-    PSNR.R(i+1) = measerr(imM(~holes),syntR(~holes));
+    PSNR.R(i) = measerr(imM(~holes),syntR(~holes));
     holes = synt==0;
-    PSNR.S(i+1) = measerr(imM(~holes),synt(~holes));
+    PSNR.S(i) = measerr(imM(~holes),synt(~holes));
 end
+save([output.Folder 'PSNR.mat'],'PSNR');
 
 % imwrite(synt-imM,[outFolder errorFile]);
 

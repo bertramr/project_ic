@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+#BSUB -J "project_ic" 
+#BSUB -o '$WORK/ProjectIC/matlab/output/logs/project_ic.txt'
+#BSUB -u reinhold.bertram@rwth-aachen.de
+#BSUB -N 
+#BSUB -W 6:00
+#BSUB -n 1
+#BSUB -M 4096
+
+#BSUB -a openmp
+
+module load MISC
+module load matlab
+cd $WORK/ProjectIC/matlab
+matlab -singleCompThread -nodisplay -nodesktop -nosplash -nojvm <<EOF
+main
+EOF
