@@ -2,11 +2,11 @@
 %
 %% Input Data
 opts.imDistance = 0.5;
-opts.scale = 1;
-opts.nD = 256;
+opts.scale = 2;
+opts.nD = 128;
 opts.MRFalg = 1;
-opts.smoothmax = 4;
-opts.lambda = 100;
+opts.smoothmax = 2;
+opts.lambda = 50;
 
 PSNR_R = zeros(100,1);
 PSNR_L = zeros(100,1);
@@ -18,9 +18,9 @@ tmp = struct;
 
 for i =1:100
     input(i).Folder = ('../video/frame/');
-    input(i).Lfile = sprintf('left_%03d.png',i);
-    input(i).Rfile = sprintf('right_%03d.png',i);
-    input(i).Mfile = sprintf('middle_%03d.png',i);
+    input(i).Lfile = sprintf('cam10_%03d.png',i);
+    input(i).Rfile = sprintf('cam06_%03d.png',i);
+    input(i).Mfile = sprintf('cam08_%03d.png',i);
     
     output(i).Folder = ('./output/');
     output(i).Lfile = sprintf('disp/dispL_%03d.png',i);
@@ -55,7 +55,7 @@ parfor i = 1:100
     holes = synt==0;
     PSNR_M(i) = measerr(imM(~holes),synt(~holes));
 end
-save([output.Folder 'PSNR.mat'],'PSNR');
+save([output(1).Folder 'PSNR.mat']);
 
 % imwrite(synt-imM,[outFolder errorFile]);
 
