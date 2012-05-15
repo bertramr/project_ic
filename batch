@@ -28,7 +28,6 @@ fi
 $matlabcmd -nodisplay -nodesktop -nosplash -logfile job.log <<EOF
 if getenv('LSB_DJOB_NUMPROC') > '1' matlabpool('OPEN','local',getenv('LSB_DJOB_NUMPROC')); end
 
-main_video
 main
 exit
 EOF
