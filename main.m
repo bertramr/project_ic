@@ -5,29 +5,29 @@ opts.imDistance = 0.5;
 opts.scale = 2;
 opts.nD = 128;
 opts.MRFalg = 1;
-opts.smoothmax = 2;
+opts.smoothmax = opts.nD + 1;
 opts.lambda = 50;
 
-PSNR_R = zeros(100,1);
-PSNR_L = zeros(100,1);
-PSNR_M = zeros(100,1);
+PSNR_R = zeros(10,1);
+PSNR_L = zeros(10,1);
+PSNR_M = zeros(10,1);
 
 input = struct;
 output = struct;
 tmp = struct;
 
-for i =1:100
-    input(i).Folder = ('../video/frame/');
-    input(i).Lfile = sprintf('cam10_%03d.png',i);
-    input(i).Rfile = sprintf('cam06_%03d.png',i);
-    input(i).Mfile = sprintf('cam08_%03d.png',i);
+for i =1:1
+    input(i).Folder = ('../video/frame/512x384/');
+    input(i).Lfile = sprintf('cam09_512x384_%03d.png',i);
+    input(i).Mfile = sprintf('cam08_512x384_%03d.png',i);
+    input(i).Rfile = sprintf('cam07_512x384_%03d.png',i);
     
     output(i).Folder = ('./output/');
-    output(i).Lfile = sprintf('disp/dispL_%03d.png',i);
-    output(i).Rfile = sprintf('disp/dispR_%03d.png',i);
-    output(i).File = sprintf('synt_%03d.png',i);
-    output(i).syntLfile = sprintf('synt/syntL_%03d.png',i);
-    output(i).syntRfile = sprintf('synt/syntR_%03d.png',i);
+    output(i).Lfile = sprintf('disp/dispL_09_512x384_%03d.png',i);
+    output(i).Rfile = sprintf('disp/dispR_07_512x384_%03d.png',i);
+    output(i).File = sprintf('synt_08_512x384_%03d.png',i);
+    output(i).syntLfile = sprintf('synt/syntL_08_512x384_%03d.png',i);
+    output(i).syntRfile = sprintf('synt/syntR_08_512x384_%03d.png',i);
     
     tmp(i).Folder = './tmp/';
     tmp(i).dispRflipFile = sprintf('dispRflip_%03d.png',i);
@@ -37,7 +37,7 @@ for i =1:100
 end
 
 %% For schleife
-parfor i = 1:100    
+parfor i = 1:1
     %%
     synthesis(input(i),output(i),tmp(i),opts)
     
@@ -55,7 +55,7 @@ parfor i = 1:100
     holes = synt==0;
     PSNR_M(i) = measerr(imM(~holes),synt(~holes));
 end
-save([output(1).Folder 'PSNR.mat']);
+save([output(1).Folder 'PSNR__09_07_08.mat']);
 
 % imwrite(synt-imM,[outFolder errorFile]);
 

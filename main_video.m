@@ -1,27 +1,26 @@
 function main_video
 addpath YUV2Image/
-NFrames = 100;
+NFrames = 1:100;
+width = 1024;
+height = 768;
 scale = 1/2;
 %%
-movL = loadFileYuv('../video/ftp.hhi.de/HHIMPEG3DV/sequences/scene_book_arrival/normalized/BookArrival_Cam06.yuv',1024,768,1:100);
-disp('movL loaded');
-for i = 1:NFrames
-    i
-    imwrite(imresize(movL(i).cdata,scale),sprintf('../video/frame/cam06_%03d.png',i));
+for cam=1:16
+    mov = loadFileYuv(sprintf('../video/ftp.hhi.de/HHIMPEG3DV/sequences/scene_book_arrival/normalized/BookArrival_Cam%02d.yuv',cam),width,height,NFrames);
+    fprintf('cam%02d loaded',cam);
+    parfor i = NFrames
+        imOriginal = mov(i).cdata;
+        
+        imwrite(imOriginal,...
+            sprintf('../video/frame/%dx%d/cam%02d_%dx%d_%03d.png',...
+            width,height,width,height,i));
+        
+        imScale = imresize(mov(i).cdata,scale);
+        sWidth = width*scale;
+        sHeight = width*scale;
+        imwrite(imScale,...
+            sprintf('../video/frame/%dx%d/cam%02d_%dx%d_%03d.png',...
+            sWidth,sHeight,sWidth,sHeight,i));
+    end
+    
 end
-%%
-movR = loadFileYuv('../video/ftp.hhi.de/HHIMPEG3DV/sequences/scene_book_arrival/normalized/BookArrival_Cam10.yuv',1024,768,1:100);
-disp('movR loaded');
-for i = 1:NFrames
-    i
-    imwrite(imresize(movR(i).cdata,scale),sprintf('../video/frame/cam10_%03d.png',i));
-end
-%%
-movM = loadFileYuv('../video/ftp.hhi.de/HHIMPEG3DV/sequences/scene_book_arrival/normalized/BookArrival_Cam08.yuv',1024,768,1:100);
-disp('movM loaded');
-for i = 1:NFrames
-    i
-    imwrite(imresize(movM(i).cdata,scale),sprintf('../video/frame/cam08_%03d.png',i));
-end
-
-
