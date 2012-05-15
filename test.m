@@ -4,7 +4,7 @@ opts.MRFalg = 1;
 i = 0;
 for lambda = 0:50:150
     for nD = 128:32:256
-        for smoothmax = 256:32:32
+        for smoothmax = 256:-32:32
             %%
             i = i + 1;
             
@@ -16,8 +16,8 @@ for lambda = 0:50:150
             
             %%
             input.Folder = ('../video/frame/');
-            input.Lfile = ('cam08_050.png');
-            input.Rfile = ('cam10_050.png');
+            input.Lfile = ('cam10_050.png');
+            input.Rfile = ('cam08_050.png');
             
             output(i).Folder = ('./output/');
             output(i).Lfile = sprintf('disp/test_dispL_050_%d_%d_%d.png',lambda,nD,smoothmax);

@@ -16,7 +16,7 @@ input = struct;
 output = struct;
 tmp = struct;
 
-for i =1:1
+for i =1:100
     input(i).Folder = ('../video/frame/512x384/');
     input(i).Lfile = sprintf('cam09_512x384_%03d.png',i);
     input(i).Mfile = sprintf('cam08_512x384_%03d.png',i);
@@ -37,7 +37,7 @@ for i =1:1
 end
 
 %% For schleife
-parfor i = 1:1
+parfor i = 1:100
     %%
     synthesis(input(i),output(i),tmp(i),opts)
     
