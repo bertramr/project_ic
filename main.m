@@ -80,6 +80,11 @@ end
 save([output(1).Folder ...
     sprintf('PSNR_cam%02d_%dx%d_Lcam%02d_Rcam%02d_1-%03d.mat',middleCam,width,height,leftCam,rightCam,frames)]);
 
+PSNR.L = PSNR_L;
+PSNR.M = PSNR_M;
+PSNR.R = PSNR_R;
+write_video(input,output, PSNR);
+
 % imwrite(synt-imM,[outFolder errorFile]);
 
 %% Plotten
