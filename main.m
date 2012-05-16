@@ -3,18 +3,18 @@
 %% Input Data
 width = 512;
 height = 384;
-frames = 1;
+frames = 100;
 
-leftCam = 9;
-rightCam = 7;
-middleCam = 8;
+leftCam = 10;
+rightCam = 8;
+middleCam = 9;
 
 opts.imDistance = 0.5;
 opts.scale = 2;
 opts.nD = 128;
 opts.MRFalg = 1;
 opts.smoothmax = opts.nD + 1;
-opts.lambda = 25;
+opts.lambda = 50;
 
 strOpt = sprintf('nD%03d_m%03d_lambda%03d',...
     opts.nD, opts.smoothmax, opts.lambda);
@@ -47,6 +47,8 @@ for i =1:frames
     output(i).syntRfile = sprintf('synt/syntR_%02d_%dx%d_%03d_%s.png',...
         rightCam,width,height,i,strOpt);
     
+    output(i).video = sprintf('video/output_%02d_%dx%d_L%02d_R%02d_%s.avi',...
+        middleCam,width,height,leftCam,rightCam,strOpt);
     
     tmp(i).Folder = './tmp/';
     tmp(i).dispRflipFile = sprintf('dispRflip_%03d.png',i);
@@ -63,16 +65,17 @@ parfor i = 1:frames
     %% Fehler berechnen
     imM = imread([input(i).Folder input(i).Mfile]);
     
-    syntL = imread([output(i).Folder output(i).syntLfile]);
-    syntR = imread([output(i).Folder output(i).syntRfile]);
-    synt = imread([output(i).Folder output(i).File]);
+        syntL = imread([output(i).Folder output(i).syntLfile]);
+        syntR = imread([output(i).Folder output(i).syntRfile]);
+        synt = imread([output(i).Folder output(i).File]);
+        
+        
+        PSNR_L(i) = psnr(imM,syntL);
+        
+        PSNR_R(i) = psnr(imM,syntR);
+        
+        PSNR_M(i) = psnr(imM,synt);
     
-    holes = syntL==0;
-    PSNR_L(i) = measerr(imM(~holes),syntL(~holes));
-    holes = syntR==0;
-    PSNR_R(i) = measerr(imM(~holes),syntR(~holes));
-    holes = synt==0;
-    PSNR_M(i) = measerr(imM(~holes),synt(~holes));
 end
 save([output(1).Folder ...
     sprintf('PSNR_cam%02d_%dx%d_Lcam%02d_Rcam%02d_1-%03d.mat',middleCam,width,height,leftCam,rightCam,frames)]);
@@ -87,3 +90,5 @@ save([output(1).Folder ...
 % subplot(2,3,4); image(imL);
 % %subplot(2,3,5); image(imM);
 % subplot(2,3,6); image(imR);
+
+

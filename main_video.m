@@ -5,7 +5,7 @@ width = 1024;
 height = 768;
 scale = 1/2;
 %%
-for cam=1:16
+for cam=6:2:10
     mov = loadFileYuv(sprintf('../video/ftp.hhi.de/HHIMPEG3DV/sequences/scene_book_arrival/depth/LG/best/book_depth_%02d.yuv',cam),width,height,NFrames);
     fprintf('cam%02d loaded',cam);
     for i = NFrames

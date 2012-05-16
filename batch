@@ -3,7 +3,7 @@
 #BSUB -o '/rwthfs/rz/cluster/work/rb570596/ProjectIC/matlab/output/logs/project_ic.txt'
 #BSUB -u reinhold.bertram@rwth-aachen.de
 #BSUB -N 
-#BSUB -W 6:00
+#BSUB -W 3:00
 #BSUB -n 8
 #BSUB -M 4096
 
